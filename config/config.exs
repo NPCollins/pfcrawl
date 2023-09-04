@@ -1,8 +1,7 @@
-use Mix.Config
+import Config
 
 config :crawly,
-  closespider_timeout: 10,
-  concurrent_requests_per_domain: 1,
+  concurrent_requests_per_domain: 4,
   middlewares: [
     Crawly.Middlewares.UniqueRequest,
     Crawly.Middlewares.AutoCookiesManager,

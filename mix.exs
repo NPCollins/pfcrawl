@@ -25,7 +25,8 @@ defmodule Pfcrawl.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:crawly, "~> 0.16.0"},
-      {:floki, "~> 0.33.0"}
+      {:floki, "~> 0.33.0"},
+      {:req, "~> 0.4.0"}
     ]
   end
 end

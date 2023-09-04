@@ -2,10 +2,11 @@
 defmodule Pfcrawl.Monsters do
   use Crawly.Spider
 
-  @last_monster 2
+  @last_monster 2147
+  @base_url "https://2e.aonprd.com/"
 
   @impl Crawly.Spider
-  def base_url(), do: "https://2e.aonprd.com/"
+  def base_url(), do: @base_url
 
   @impl Crawly.Spider
   def init() do
@@ -15,7 +16,6 @@ defmodule Pfcrawl.Monsters do
 
   @impl Crawly.Spider
   def parse_item(response) do
-    IO.inspect(response.request_url)
     # Parse response body to document
     {:ok, document} = Floki.parse_document(response.body)
 
@@ -33,6 +33,21 @@ defmodule Pfcrawl.Monsters do
       |> Floki.attribute("src")
       |> Floki.text
 
+    sanitized_name =
+      name 
+      |> String.replace(~r/\(.*\)/, "")
+      |> String.replace(~r/[ |(|)|_|-]/, "")
+    
+    get_image(@base_url <> Regex.replace(~r/\\/, img, "/"), sanitized_name)
+
     IO.inspect(%{name: name, img: img})
+  end
+
+  def get_image(@base_url, name) do
+    File.write!("./out/monsters/noimage", name <> "\n", [:append])
+  end
+  def get_image(url, name) do
+    image = Req.get!(url) |> IO.inspect
+    File.write!("./out/monsters/#{name}.png", image.body)
   end
 end

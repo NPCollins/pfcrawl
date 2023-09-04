@@ -27,3 +27,6 @@ pfcrawl-*.tar
 
 # Crawly Artifact
 /dets_simple_storage
+
+# Output
+out/monsters/*
