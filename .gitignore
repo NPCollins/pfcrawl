@@ -24,3 +24,6 @@ pfcrawl-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Crawly Artifact
+/dets_simple_storage
