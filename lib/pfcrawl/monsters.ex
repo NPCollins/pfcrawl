@@ -2,42 +2,37 @@
 defmodule Pfcrawl.Monsters do
   use Crawly.Spider
 
+  @last_monster 2
+
   @impl Crawly.Spider
-  def base_url(), do: "https://2e.aonprd.com/Monsters.aspx"
+  def base_url(), do: "https://2e.aonprd.com/"
 
   @impl Crawly.Spider
   def init() do
-    [start_urls: ["https://2e.aonprd.com/Monsters.aspx"]]
+    urls = Enum.map(1..@last_monster, fn id -> "https://2e.aonprd.com/Monsters.aspx?ID=#{id}" end)
+    [start_urls: urls]
   end
 
   @impl Crawly.Spider
   def parse_item(response) do
+    IO.inspect(response.request_url)
     # Parse response body to document
     {:ok, document} = Floki.parse_document(response.body)
 
     # Create item (for pages where items exists)
-    items =
+    base = "body div form div div div div "
+
+    name =
       document
-      |> Floki.find("body div form div div div div span nethys-search")
-      |> IO.inspect()
+      |> Floki.find(base <> "span#ctl00_RadDrawer1_Content_MainContent_DetailedOutput h1.title")
+      |> Floki.text([deep: false])
 
-    # |> Enum.map(fn row ->
-    #   %{
-    #     title: Floki.find(row, "h3 a") |> Floki.attribute("title") |> Floki.text(),
-    #     price: Floki.find(row, ".product_price .price_color") |> Floki.text(),
-    #     url: response.request_url
-    #   }
-    # end)
+    img =
+      document
+      |> Floki.find(base <> "a img.thumbnail")
+      |> Floki.attribute("src")
+      |> Floki.text
 
-    # next_requests =
-    #   document
-    #   |> Floki.find(".next a")
-    #   |> Floki.attribute("href")
-    #   |> Enum.map(fn url ->
-    #     Crawly.Utils.build_absolute_url(url, response.request.url)
-    #     |> Crawly.Utils.request_from_url()
-    #   end)
-
-    %{items: items}
+    IO.inspect(%{name: name, img: img})
   end
 end
