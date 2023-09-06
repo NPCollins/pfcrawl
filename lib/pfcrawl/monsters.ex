@@ -2,7 +2,9 @@
 defmodule Pfcrawl.Monsters do
   use Crawly.Spider
 
-  @last_monster 2147
+  @starting_monster 1
+  @last_monster 2
+  #@last_monster 2690
   @base_url "https://2e.aonprd.com/"
 
   @impl Crawly.Spider
@@ -10,7 +12,7 @@ defmodule Pfcrawl.Monsters do
 
   @impl Crawly.Spider
   def init() do
-    urls = Enum.map(1..@last_monster, fn id -> "https://2e.aonprd.com/Monsters.aspx?ID=#{id}" end)
+    urls = Enum.map(@starting_monster..@last_monster, fn id -> "https://2e.aonprd.com/Monsters.aspx?ID=#{id}" end)
     [start_urls: urls]
   end
 
@@ -47,7 +49,8 @@ defmodule Pfcrawl.Monsters do
     File.write!("./out/monsters/noimage", name <> "\n", [:append])
   end
   def get_image(url, name) do
-    image = Req.get!(url) |> IO.inspect
-    File.write!("./out/monsters/#{name}.png", image.body)
+    [_, extension] = Regex.run(~r/(\.[a-z]+)$/, url)
+    image = Req.get!(url)
+    File.write!("./out/monsters/#{name}#{extension}", image.body)
   end
 end
